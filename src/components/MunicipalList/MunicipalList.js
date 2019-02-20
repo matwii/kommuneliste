@@ -3,7 +3,6 @@ import './MunicipalList.css';
 import moment from 'moment';
 
 const MunicipalList = ({list}) => {
-    console.log(list);
     const listItems = list.map((muni) =>
         <tr key={muni.label}>
             <th scope="row">{muni.label}</th>
