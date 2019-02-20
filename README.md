@@ -25,3 +25,8 @@ It correctly bundles React in production mode and optimizes the build for the be
 The build is minified and the filenames include the hashes.
 Your app is ready to be deployed!
 
+### `TODO`
+These are some things I should do to make the app even better.
+* Dynamic Loading of items
+* Sorting when you click on table head
+
