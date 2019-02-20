@@ -1,10 +1,11 @@
 import React from 'react';
-import './style.css';
+import './MunicipalList.css';
 import moment from 'moment';
 
 const MunicipalList = ({list}) => {
+    console.log(list);
     const listItems = list.map((muni) =>
-        <tr>
+        <tr key={muni.label}>
             <th scope="row">{muni.label}</th>
             <td>{muni.description}</td>
             <td>{moment(muni.lastUpdated).format('LLL')}</td>

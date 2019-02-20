@@ -1,7 +1,8 @@
 import React, {Component} from 'react';
 import MunicipalList from '../components/MunicipalList/MunicipalList';
 import Spinner from '../components/Spinner';
-import SearchInput from '../components/SearchInput'
+import SearchInput from '../components/SearchInput/SearchInput'
+import RadioButtonGroup from '../components/RadioButtonGroup/RadioButtonGroup';
 import "./MainContainer.css"
 
 class MainContainer extends Component {
@@ -10,7 +11,8 @@ class MainContainer extends Component {
 
         this.state = {
             loading: true,
-            municipalities: []
+            data: [],
+            searchString: ''
         }
     }
 
@@ -26,16 +28,23 @@ class MainContainer extends Component {
      * @returns {Promise<void>}
      */
     async getData() {
+        //Checks if data is stored in localstorage before fetching from internet
+        const storedData = JSON.parse(localStorage.getItem('data'));
+        if (storedData) {
+            //If found, sets data as state
+            this.setState({loading: false, data: storedData});
+            return storedData;
+        }
+        //If not found in LocalStorage, fetching data from internet.
         try {
             let response = await fetch('https://register.geonorge.no/api/subregister/sosi-kodelister/kartverket/kommunenummer-alle.json');
             let responseJson = await response.json();
-            console.log(responseJson);
             if (responseJson) {
                 //Sorts the array based on the municipaliti number
                 responseJson.containeditems.sort((a, b) => a.label - b.label);
-                this.setState({municipalities: responseJson.containeditems})
+                localStorage.setItem('data', JSON.stringify(responseJson.containeditems));
+                this.setState({data: responseJson.containeditems, loading: false})
             }
-            this.setState({loading: false});
         } catch (error) {
             console.error(error);
         }
@@ -46,10 +55,14 @@ class MainContainer extends Component {
      * @param event
      */
     onTextChange = (event) => {
-        console.log(event.target.value)
+        this.setState({searchString: event.target.value});
     };
 
     render() {
+        let { data, searchString } = this.state;
+        if (searchString.length > 0) {
+            return data.filter((i) => i.label.match( searchString ) || i.description.toLowerCase().match(searchString.toLowerCase()))
+        }
         if (this.state.loading) {
             return (
                 <Spinner/>
@@ -59,23 +72,16 @@ class MainContainer extends Component {
             <div className="container">
                 <h2>Kommunesøk</h2>
                 <div className="row">
-                    <SearchInput onTextChange={this.onTextChange}/>
-                    <div className="input-group col-md-6 col-sm-12">
-                        <div className="btn-group btn-group-toggle" data-toggle="buttons">
-                            <label className="btn btn-light">
-                                <input type="radio" name="options" id="option1" autoComplete="off"/> Active
-                            </label>
-                            <label className="btn btn-light">
-                                <input type="radio" name="options" id="option2" autoComplete="off"/> Inactive
-                            </label>
-                            <label className="btn btn-light active">
-                                <input type="radio" name="options" id="option3" autoComplete="off"/> All
-                            </label>
-                        </div>
+                    <SearchInput
+                        onTextChange={this.onTextChange}
+                    />
+                    <div className="col-md-2" />
+                    <div className="input-group col-md-4 col-sm-12">
+                        <RadioButtonGroup />
                     </div>
                 </div>
                 <MunicipalList
-                    list={this.state.municipalities}
+                    list={data}
                 />
             </div>
         )

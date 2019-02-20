@@ -1,4 +1,5 @@
 import React from 'react'
+import './SearchInput.css';
 
 const SearchInput = ({onTextChange}) => {
     return (
@@ -6,7 +7,7 @@ const SearchInput = ({onTextChange}) => {
             <div className="input-group-append">
                 <span className="input-group-text" id="basic-addon2"><i className="fas fa-search"></i></span>
             </div>
-            <input placeholder="Search here" onChange={onTextChange} className="form-control" type="text" />
+            <input placeholder="Type here.." onChange={onTextChange} className="form-control" type="text" />
         </div>
     )
 };
